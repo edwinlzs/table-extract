@@ -94,6 +94,18 @@ impl Table {
         html.select(&css("table")).next().map(Table::new)
     }
 
+    pub fn find_all(html: &str) -> Option<Vec<Table>> {
+      let mut tables = Vec::new();
+      let html = Html::parse_fragment(html);
+      let selector = css("table");
+
+      let mut html_iterator = html.select(&selector);
+      while let Some(table) = html_iterator.next().map(Table::new) {
+        tables.push(table)
+      };
+      Some(tables)
+    }
+
     /// Finds the table in `html` with an id of `id`.
     pub fn find_by_id(html: &str, id: &str) -> Option<Table> {
         let html = Html::parse_fragment(html);
