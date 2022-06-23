@@ -94,16 +94,17 @@ impl Table {
         html.select(&css("table")).next().map(Table::new)
     }
 
+    // Finds all tables in `html`.
     pub fn find_all(html: &str) -> Vec<Table> {
-      let mut tables = Vec::new();
-      let html = Html::parse_fragment(html);
-      let selector = css("table");
+        let mut tables = Vec::new();
+        let html = Html::parse_fragment(html);
+        let selector = css("table");
 
-      let mut html_iterator = html.select(&selector);
-      while let Some(table) = html_iterator.next().map(Table::new) {
-        tables.push(table)
-      };
-      tables
+        let mut html_iterator = html.select(&selector);
+        while let Some(table) = html_iterator.next().map(Table::new) {
+            tables.push(table)
+        }
+        tables
     }
 
     /// Finds the table in `html` with an id of `id`.
@@ -405,6 +406,29 @@ mod tests {
     fn test_find_first_some() {
         assert!(Table::find_first(TABLE_TH).is_some());
         assert!(Table::find_first(TABLE_TD).is_some());
+    }
+
+    #[test]
+    fn test_find_all_no_table() {
+        assert_eq!(0, Table::find_all("").len());
+        assert_eq!(0, Table::find_all("foo").len());
+        assert_eq!(0, Table::find_all(HTML_NO_TABLE).len());
+    }
+
+    #[test]
+    fn test_find_all_empty_table() {
+        let empty_table = Table {
+            headers: HashMap::new(),
+            data: Vec::new(),
+        };
+        assert_eq!(Some(empty_table), Table::find_all(TABLE_EMPTY).pop());
+    }
+
+    #[test]
+    fn test_find_all_multiple_tables() {
+        assert_eq!(1, Table::find_all(TABLE_TH).len());
+        assert_eq!(1, Table::find_all(TABLE_TD).len());
+        assert_eq!(2, Table::find_all(HTML_TWO_TABLES).len());
     }
 
     #[test]
